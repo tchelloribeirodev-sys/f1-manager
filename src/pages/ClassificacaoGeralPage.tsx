@@ -204,6 +204,7 @@ export default function ClassificacaoGeralPage() {
                   <td>
                     <div className="driver-cell">
                       <span className={i < 3 ? `position top-${i + 1}` : 'position'}>{i + 1}</span>
+                      <span className="team-dot" style={{ background: piloto.corEquipe }} />
                       <strong>{piloto.nomePiloto}</strong>
                     </div>
                   </td>
