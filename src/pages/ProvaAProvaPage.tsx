@@ -398,7 +398,6 @@ export default function ProvaAProvaPage() {
               >
                 Add
               </button>
-              <span className="atalho-hint">Ctrl+Enter</span>
             </div>
 
             <button type="button" className="btn-primary" onClick={salvar} disabled={salvando || !provaId}>
