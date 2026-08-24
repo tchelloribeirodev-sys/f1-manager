@@ -59,12 +59,14 @@ function AppShell() {
 
       <main className="main">
         <header className="topbar">
-          <button className="icon-button mobile-menu" onClick={() => setMenuOpen(true)}>
-            <Menu size={22} />
-          </button>
-          <div className="page-title">
-            <span>F1 MANAGER</span>
-            <h1>{PAGE_TITLES[page]}</h1>
+          <div className="topbar-row">
+            <button className="icon-button mobile-menu" onClick={() => setMenuOpen(true)}>
+              <Menu size={22} />
+            </button>
+            <div className="page-title">
+              <span>F1 MANAGER</span>
+              <h1>{PAGE_TITLES[page]}</h1>
+            </div>
           </div>
           <ContextSelectors showTemporada={PAGINAS_COM_TEMPORADA.includes(page)} />
         </header>

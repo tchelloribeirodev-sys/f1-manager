@@ -47,12 +47,20 @@ button { cursor: pointer; }
 .sidebar-user .icon-button { flex-shrink:0; color:#8793a6; }
 .sidebar-user .icon-button:hover { color:#ff6b64; }
 .main { flex:1; min-width:0; }
-.topbar { min-height:88px; padding:16px 30px; border-bottom:1px solid #1b2330; display:flex; align-items:center; justify-content:space-between; gap:20px; background:rgba(10,13,19,.88); backdrop-filter: blur(10px); position:sticky; top:0; z-index:20; }
+/* topbar em duas linhas: título (com botão de menu no mobile) em cima,
+   combos de Jogo/Carreira/Temporada logo abaixo, sempre um ao lado do
+   outro — isso evita a barra de topo crescer demais no celular, que era
+   o caso quando os combos ficavam ao lado do título e quebravam pra baixo
+   dele em várias linhas. */
+.topbar { padding:14px 30px; border-bottom:1px solid #1b2330; display:flex; flex-direction:column; gap:12px; background:rgba(10,13,19,.88); backdrop-filter: blur(10px); position:sticky; top:0; z-index:20; }
+.topbar-row { display:flex; align-items:center; gap:14px; }
 .page-title span { color:#667388; font-size:10px; letter-spacing:.16em; font-weight:800; }
 .page-title h1 { margin:3px 0 0; font-size:22px; letter-spacing:-.02em; }
-.context { display:flex; gap:10px; }
-.context label { display:flex; flex-direction:column; gap:4px; }
+.context { display:flex; flex-wrap:wrap; gap:8px; }
+.context label { display:flex; flex-direction:column; gap:4px; flex:1 1 110px; min-width:0; }
 .context label > span { font-size:9px; color:#69778b; text-transform:uppercase; letter-spacing:.1em; font-weight:800; }
+.context .select-wrap { width:100%; }
+.context select { width:100%; min-width:0; }
 .select-wrap { position:relative; }
 select { appearance:none; border:1px solid #293443; background:#111722; color:#e8edf5; border-radius:8px; min-width:145px; padding:9px 31px 9px 11px; outline:none; }
 .select-wrap svg { position:absolute; right:9px; top:50%; transform:translateY(-50%); pointer-events:none; color:#69778b; }
@@ -103,10 +111,10 @@ tr:hover td { background:#101720; }
   .mobile-menu,.close-menu { display:grid; }
   .brand { justify-content:flex-start; }
   .close-menu { margin-left:auto; }
-  .topbar { padding:14px 16px; align-items:flex-start; }
-  .mobile-menu { margin-top:5px; }
+  .topbar { padding:12px 16px; gap:10px; }
   .page-title { margin-right:auto; }
-  .context { flex-direction:column; gap:6px; }
+  .context select { font-size:12px; padding:7px 24px 7px 9px; }
+  .context .select-wrap svg { right:6px; width:14px; height:14px; }
   .content { padding:18px 14px 35px; }
   .stats { grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:24px; }
   .stat-card { padding:13px; }
@@ -117,6 +125,9 @@ tr:hover td { background:#101720; }
 @media (max-width: 500px) {
   .page-title h1 { font-size:18px; }
   .page-title span { font-size:9px; }
+  .context { gap:6px; }
+  .context label { flex-basis:0; }
+  .context label > span { font-size:8px; }
   .stats { grid-template-columns:repeat(2,1fr); }
   .stat-card strong { font-size:18px; }
   .career-pill { display:none; }
