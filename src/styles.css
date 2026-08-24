@@ -18,8 +18,18 @@ button, select, input { font: inherit; }
 button { cursor: pointer; }
 .app { min-height: 100vh; display: flex; background: radial-gradient(circle at 80% 0%, rgba(53,113,198,.10), transparent 35%), #080b11; }
 .sidebar {
-  width: 248px; flex: 0 0 248px; min-height: 100vh; padding: 22px 16px;
+  width: 248px; flex: 0 0 248px; height: 100vh; padding: 22px 16px;
   background: #0d1119; border-right: 1px solid #1b2330; display: flex; flex-direction: column; z-index: 30;
+  /* precisa de altura FIXA (não só min-height) + overflow-y pra rolar por
+     dentro da própria barra lateral — sem isso, com o menu maior que a tela
+     (comum no app instalado como PWA, sem a barra do navegador pra dar uma
+     "folga" extra), o item excedente simplesmente ficava cortado, e o gesto
+     de rolar dentro da sidebar acabava rolando a página toda por trás dela. */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@supports (height: 100dvh) {
+  .sidebar { height: 100dvh; }
 }
 .brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 28px; }
 .brand-mark { width: 38px; height: 38px; }
@@ -87,7 +97,7 @@ tr:hover td { background:#101720; }
 .overlay { display:none; }
 
 @media (max-width: 900px) {
-  .sidebar { position:fixed; left:-260px; transition:left .2s ease; box-shadow:20px 0 60px rgba(0,0,0,.35); }
+  .sidebar { position:fixed; top:0; bottom:0; left:-260px; height:auto; transition:left .2s ease; box-shadow:20px 0 60px rgba(0,0,0,.35); }
   .sidebar.open { left:0; }
   .overlay { display:block; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:25; }
   .mobile-menu,.close-menu { display:grid; }
@@ -282,3 +292,10 @@ td.pos-cell { text-align:center; font-family:'JetBrains Mono',monospace; }
 .gate-card input { width:100%; margin:14px 0; border:1px solid #293443; background:#111722; color:#e8edf5; border-radius:8px; padding:10px 12px; text-align:center; }
 .gate-card .btn-primary { width:100%; }
 .gate-card p.error { color:#ff8f8a; font-size:12px; margin-top:10px; }
+.gate-password-field { position:relative; margin:14px 0; }
+.gate-password-field input { margin:0; padding-right:38px; }
+.gate-password-field .gate-toggle-senha {
+  position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  color:#69778b; padding:6px;
+}
+.gate-password-field .gate-toggle-senha:hover { color:#e8edf5; }

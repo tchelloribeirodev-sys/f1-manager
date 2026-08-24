@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
+import { Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 import BrandMark from './BrandMark';
 
@@ -17,6 +18,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined); // undefined = ainda carregando
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [entrando, setEntrando] = useState(false);
 
@@ -62,15 +64,26 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             }}
             autoFocus
           />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={senha}
-            onChange={(e) => {
-              setSenha(e.target.value);
-              setErro(null);
-            }}
-          />
+          <div className="gate-password-field">
+            <input
+              type={mostrarSenha ? 'text' : 'password'}
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => {
+                setSenha(e.target.value);
+                setErro(null);
+              }}
+            />
+            <button
+              type="button"
+              className="icon-button gate-toggle-senha"
+              onClick={() => setMostrarSenha((v) => !v)}
+              aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+              tabIndex={-1}
+            >
+              {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           <button type="submit" className="btn-primary" disabled={entrando}>
             {entrando ? 'Entrando...' : 'Entrar'}
           </button>
