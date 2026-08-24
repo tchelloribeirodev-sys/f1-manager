@@ -88,6 +88,19 @@ export default function ClassificacaoGeralPage() {
     return mapa;
   }, [dados]);
 
+  // posição da sprint de cada piloto em cada prova — exibida entre
+  // parênteses ao lado da posição principal (a sprint é lançada antes da
+  // corrida principal, então pode aparecer só ela, "(2)", até o resultado
+  // principal também ser gravado, aí passa a "1 (2)").
+  const posicaoSprintPorPilotoEProva = useMemo(() => {
+    const mapa: Record<string, number> = {};
+    if (!dados) return mapa;
+    dados.resultadosSprint.forEach((r) => {
+      if (r.posicao) mapa[`${r.id_piloto}-${r.id_prova}`] = r.posicao;
+    });
+    return mapa;
+  }, [dados]);
+
   if (!anoJogo) {
     return <div className="banner-warn">Selecione um ano do jogo no topo para continuar.</div>;
   }
@@ -196,9 +209,14 @@ export default function ClassificacaoGeralPage() {
                   </td>
                   {dados.provas.map((p) => {
                     const pos = posicaoPorPilotoEProva[`${piloto.idPiloto}-${p.id}`];
+                    const posSprint = posicaoSprintPorPilotoEProva[`${piloto.idPiloto}-${p.id}`];
+                    let conteudo: string | number = '·';
+                    if (pos && posSprint) conteudo = `${pos} (${posSprint})`;
+                    else if (pos) conteudo = pos;
+                    else if (posSprint) conteudo = `(${posSprint})`;
                     return (
                       <td key={p.id} className="pos-cell">
-                        {pos ?? '·'}
+                        {conteudo}
                       </td>
                     );
                   })}
