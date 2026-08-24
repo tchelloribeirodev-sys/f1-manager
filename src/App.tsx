@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ContextSelectors from './components/ContextSelectors';
 import AuthGate from './components/AuthGate';
+import BrandMark from './components/BrandMark';
+import { f1 } from './lib/supabaseClient';
 import { AppContextProvider } from './context/AppContext';
 import { PAGE_TITLES, type PageKey } from './pages';
 import AnoPage from './pages/AnoPage';
@@ -49,8 +51,32 @@ const PAGINAS_COM_TEMPORADA: PageKey[] = [
 ];
 
 function AppShell() {
-  const [page, setPage] = useState<PageKey>('ano');
+  // Enquanto não existir nenhum ano_jogo gravado, a tela inicial é a de
+  // Ano (é o primeiro cadastro que precisa ser feito). Assim que já
+  // existir pelo menos um, a tela inicial passa a ser a Classificação
+  // Geral — mais útil no dia a dia do que ficar caindo sempre no cadastro.
+  // `page === null` = ainda checando; só decide a tela inicial uma vez,
+  // ao entrar no app (depois disso a navegação manual do usuário manda).
+  const [page, setPage] = useState<PageKey | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    f1()
+      .from('tb_ano')
+      .select('id')
+      .limit(1)
+      .then(({ data }) => {
+        setPage(data && data.length > 0 ? 'classificacaoGeral' : 'ano');
+      });
+  }, []);
+
+  if (!page) {
+    return (
+      <div className="gate-screen">
+        <BrandMark size={44} />
+      </div>
+    );
+  }
 
   return (
     <div className="app">
