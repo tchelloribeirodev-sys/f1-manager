@@ -34,6 +34,7 @@ export default function ProvaAProvaPage() {
   const [quickPiloto, setQuickPiloto] = useState<number | ''>('');
   const [quickPosicao, setQuickPosicao] = useState('');
   const [quickPosicaoSprint, setQuickPosicaoSprint] = useState('');
+  const quickPilotoRef = useRef<HTMLSelectElement>(null);
   const quickPosicaoRef = useRef<HTMLInputElement>(null);
   const quickPosicaoSprintRef = useRef<HTMLInputElement>(null);
 
@@ -178,7 +179,11 @@ export default function ProvaAProvaPage() {
   // preenche a posição (e, em corrida sprint, a posição da sprint) do piloto
   // escolhido no combo rápido (sem gravar no banco — isso só acontece quando
   // "Salvar" é clicado) e já prepara o próximo piloto pendente, para permitir
-  // ir digitando posição a posição sem tirar a mão do teclado.
+  // ir digitando posição a posição sem tirar a mão do teclado: o foco volta
+  // pro combo de piloto (não pro campo de posição) e, em qualquer campo que
+  // estava preenchido (Posição e/ou Sprint), já deixa pronto pra próxima
+  // colocação (valor + 1) — assim o fluxo normal de "17º, 18º, 19º..." não
+  // precisa redigitar nada, só escolher o próximo piloto e confirmar.
   function adicionarRapido() {
     if (!quickPiloto || (!quickPosicao && !quickPosicaoSprint)) return;
     const patch: Partial<LinhaForm> = {};
@@ -188,10 +193,26 @@ export default function ProvaAProvaPage() {
 
     const proximo = pilotosSemPosicao.find((r) => r.idPiloto !== quickPiloto);
     setQuickPiloto(proximo?.idPiloto ?? '');
-    setQuickPosicao('');
-    setQuickPosicaoSprint('');
-    quickPosicaoRef.current?.focus();
+    setQuickPosicao(quickPosicao ? String(Number(quickPosicao) + 1) : '');
+    setQuickPosicaoSprint(quickPosicaoSprint ? String(Number(quickPosicaoSprint) + 1) : '');
+    quickPilotoRef.current?.focus();
   }
+
+  // Atalho Ctrl+Enter pra clicar em "Add" sem sair do teclado — Ctrl+A foi
+  // descartado de propósito: dentro dos próprios campos numéricos dessa
+  // tela, Ctrl+A é o "selecionar tudo" nativo do navegador (útil pra
+  // sobrescrever um valor digitado errado), e um atalho global roubaria
+  // esse comportamento.
+  useEffect(() => {
+    function aoTeclar(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        adicionarRapido();
+      }
+    }
+    window.addEventListener('keydown', aoTeclar);
+    return () => window.removeEventListener('keydown', aoTeclar);
+  });
 
   function definirPole(idPiloto: number) {
     setLinhas((atual) => {
@@ -316,6 +337,7 @@ export default function ProvaAProvaPage() {
               <label>Add rápido — piloto</label>
               <div className="select-wrap">
                 <select
+                  ref={quickPilotoRef}
                   value={quickPiloto}
                   onChange={(e) => setQuickPiloto(e.target.value ? Number(e.target.value) : '')}
                 >
@@ -366,14 +388,18 @@ export default function ProvaAProvaPage() {
                 />
               </div>
             )}
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={adicionarRapido}
-              disabled={!quickPiloto || (!quickPosicao && !quickPosicaoSprint)}
-            >
-              Add
-            </button>
+            <div className="add-rapido-wrap">
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={adicionarRapido}
+                disabled={!quickPiloto || (!quickPosicao && !quickPosicaoSprint)}
+                title="Atalho: Ctrl+Enter"
+              >
+                Add
+              </button>
+              <span className="atalho-hint">Ctrl+Enter</span>
+            </div>
 
             <button type="button" className="btn-primary" onClick={salvar} disabled={salvando || !provaId}>
               {salvando ? 'Salvando...' : 'Salvar'}

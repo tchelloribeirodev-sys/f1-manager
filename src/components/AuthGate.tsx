@@ -36,7 +36,16 @@ export default function AuthGate({ children }: { children: ReactNode }) {
     setEntrando(true);
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
     setEntrando(false);
-    if (error) setErro('E-mail ou senha incorretos.');
+    if (error) {
+      setErro('E-mail ou senha incorretos.');
+      return;
+    }
+    // login deu certo — limpa os campos agora, e não só quando a tela de
+    // login reaparecer (ela não desmonta ao dar logout, então os valores
+    // ficavam preenchidos de uma sessão pra outra se não fizesse isso aqui).
+    setEmail('');
+    setSenha('');
+    setMostrarSenha(false);
   }
 
   // ainda checando se já existe sessão salva — evita "piscar" a tela de login
