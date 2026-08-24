@@ -392,7 +392,7 @@ export default function ProvaAProvaPage() {
             </div>
           )}
 
-          <div className="table-card">
+          <div className="table-card table-card--sticky-first">
             <div className="table-scroll">
               <table>
                 <thead>

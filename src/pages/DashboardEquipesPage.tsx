@@ -34,36 +34,38 @@ export default function DashboardEquipesPage() {
 
   return (
     <div>
-      <div className="banner-info">
-        Total de pontos acumulado por equipe, temporada a temporada, em F1 {anoJogo} — cada ponto do eixo é uma
-        temporada inteira (1ª, 2ª, 3ª...), somando ao total anterior. Só entram temporadas que já têm escalação
-        cadastrada. Cada linha usa a cor cadastrada da equipe.
-      </div>
-
       {series.length === 0 || pontos.length === 0 ? (
         <div className="banner-warn">Sem dados suficientes ainda — cadastre a escalação em Times e lance resultados em Prova a Prova.</div>
       ) : (
         <div className="chart-card">
-          <ResponsiveContainer width="100%" height={440}>
-            <LineChart data={pontos} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1b2330" />
-              <XAxis dataKey="temporadaLabel" stroke="#69778b" fontSize={11} />
-              <YAxis stroke="#69778b" fontSize={11} />
-              <Tooltip contentStyle={{ background: '#0e141e', border: '1px solid #202a38', borderRadius: 8, fontSize: 12 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              {series.map((s) => (
-                <Line
-                  key={s.chave}
-                  type="monotone"
-                  dataKey={s.chave}
-                  name={s.nome}
-                  stroke={s.cor}
-                  strokeWidth={2.5}
-                  dot={{ r: 3 }}
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+          {/* Até 10 temporadas no eixo X também apertam bastante numa tela
+              de celular — mesma solução do dashboard de pilotos: largura
+              mínima proporcional ao número de pontos, com rolagem
+              horizontal dentro do card. */}
+          <div className="chart-scroll">
+            <div style={{ minWidth: Math.max(pontos.length * 56, 480) }}>
+              <ResponsiveContainer width="100%" height={440}>
+                <LineChart data={pontos} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1b2330" />
+                  <XAxis dataKey="temporadaLabel" stroke="#69778b" fontSize={11} />
+                  <YAxis stroke="#69778b" fontSize={11} />
+                  <Tooltip contentStyle={{ background: '#0e141e', border: '1px solid #202a38', borderRadius: 8, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {series.map((s) => (
+                    <Line
+                      key={s.chave}
+                      type="monotone"
+                      dataKey={s.chave}
+                      name={s.nome}
+                      stroke={s.cor}
+                      strokeWidth={2.5}
+                      dot={{ r: 3 }}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -26,11 +26,13 @@ function pontosDaProva(dados: DadosTemporada, idPiloto: number, idProva: number)
 export type PontoGraficoEquipes = { temporadaLabel: string; [chave: string]: number | string };
 export type SerieEquipe = { chave: string; nome: string; cor: string };
 
-// Total acumulado de pontos por equipe, temporada a temporada — cada ponto
-// do eixo X é uma temporada inteira daquele ano_jogo (1ª, 2ª, 3ª...), com o
-// total de pontos que a equipe fez naquela temporada, e a linha soma o
-// acumulado à medida que as temporadas avançam. Só entram temporadas que já
-// têm escalação cadastrada (ignora as que ainda nem começaram).
+// Pontos de cada equipe POR temporada (não acumulado) — cada ponto do eixo
+// X é uma temporada inteira daquele ano_jogo (1ª, 2ª, 3ª...) com o total que
+// a equipe fez SÓ naquela temporada, então a linha sobe e desce mostrando a
+// performance temporada a temporada (uma queda no gráfico é uma temporada
+// pior, não um total menor). Só entram temporadas que já têm escalação
+// cadastrada (ignora as que ainda nem começaram). Uma equipe sem escalação
+// numa temporada específica (ex.: entrou depois) aparece com 0 nela.
 export async function carregarEvolucaoEquipes(
   anoJogo: number,
   tipoCarreira: TipoCarreira
@@ -45,7 +47,6 @@ export async function carregarEvolucaoEquipes(
     dados.roster.forEach((r) => equipesMap.set(r.idEquipe, { nome: r.nomeEquipe, cor: r.corEquipe }));
   });
 
-  const acumulado: Record<number, number> = {};
   const pontos: PontoGraficoEquipes[] = [];
 
   dadosPorTemporada.forEach((dados, i) => {
@@ -53,13 +54,14 @@ export async function carregarEvolucaoEquipes(
 
     const pilotos = calcularClassificacaoPilotos(dados);
     const equipesDaTemporada = calcularClassificacaoEquipes(pilotos);
+    const pontosDaTemporada: Record<number, number> = {};
     equipesDaTemporada.forEach((eq) => {
-      acumulado[eq.idEquipe] = (acumulado[eq.idEquipe] ?? 0) + eq.pontos;
+      pontosDaTemporada[eq.idEquipe] = eq.pontos;
     });
 
     const registro: PontoGraficoEquipes = { temporadaLabel: `T${temporadas[i]}` };
     equipesMap.forEach((_info, idEquipe) => {
-      registro[`eq${idEquipe}`] = acumulado[idEquipe] ?? 0;
+      registro[`eq${idEquipe}`] = pontosDaTemporada[idEquipe] ?? 0;
     });
     pontos.push(registro);
   });

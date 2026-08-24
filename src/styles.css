@@ -82,6 +82,21 @@ table { width:100%; min-width:720px; border-collapse:collapse; }
 th { padding:12px 14px; background:#111822; color:#68768a; text-align:left; font-size:9px; letter-spacing:.11em; font-weight:800; }
 td { padding:13px 14px; border-top:1px solid #1b2330; color:#aab4c3; font-size:12px; white-space:nowrap; }
 tr:hover td { background:#101720; }
+
+/* Grid com muitas provas (Classificação Geral/Por Prova): mantém a coluna
+   do piloto fixa enquanto só o restante da tabela rola horizontalmente.
+   Precisa de background OPACO explícito nas células fixas (th já tem,
+   td não tinha) — sem isso, as colunas que passam por baixo apareceriam
+   "vazando" através da coluna fixa durante o scroll. */
+.table-card--sticky-first th:first-child,
+.table-card--sticky-first td:first-child {
+  position: sticky;
+  left: 0;
+  box-shadow: 3px 0 6px rgba(0,0,0,.35);
+}
+.table-card--sticky-first th:first-child { z-index: 3; }
+.table-card--sticky-first td:first-child { z-index: 2; background: #0d131c; }
+.table-card--sticky-first tr:hover td:first-child { background: #101720; }
 .position { width:25px; height:25px; border-radius:7px; display:grid; place-items:center; color:#7b8798; font-weight:800; font-size:11px; }
 .top-1 { background:#c89b3c; color:#1b1407; }.top-2 { background:#9aa5b4; color:#111; }.top-3 { background:#9a6546; color:#fff; }
 .driver-cell,.team-cell { display:flex; align-items:center; gap:9px; }
@@ -255,6 +270,7 @@ tr.row-editing td { background:#151b25; }
 td.pos-cell { text-align:center; font-family:'JetBrains Mono',monospace; }
 
 .chart-card { border:1px solid #202a38; background:#0d131c; border-radius:12px; padding:18px 14px 8px; }
+.chart-scroll { overflow-x:auto; }
 
 .title-cols { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:26px; }
 @media (max-width:760px) { .title-cols { grid-template-columns:1fr; } }

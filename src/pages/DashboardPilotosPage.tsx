@@ -34,27 +34,32 @@ export default function DashboardPilotosPage() {
 
   return (
     <div>
-      <div className="banner-info">
-        Pontos acumulados dos 5 primeiros colocados da temporada {temporada}, prova a prova. As cores das linhas
-        são fixas por posição no ranking (não são as cores das equipes).
-      </div>
-
       {series.length === 0 || pontos.length === 0 ? (
         <div className="banner-warn">Sem dados suficientes ainda — lance resultados em Prova a Prova.</div>
       ) : (
         <div className="chart-card">
-          <ResponsiveContainer width="100%" height={440}>
-            <LineChart data={pontos} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1b2330" />
-              <XAxis dataKey="provaLabel" stroke="#69778b" fontSize={11} />
-              <YAxis stroke="#69778b" fontSize={11} />
-              <Tooltip contentStyle={{ background: '#0e141e', border: '1px solid #202a38', borderRadius: 8, fontSize: 12 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              {series.map((s) => (
-                <Line key={s.chave} type="monotone" dataKey={s.chave} name={s.nome} stroke={s.cor} strokeWidth={2.5} dot={{ r: 3 }} />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+          {/* Com até 16 provas na temporada, os rótulos do eixo X ficam
+              espremidos numa tela de celular. Em vez de forçar o gráfico a
+              caber na largura da tela (o que deixa tudo ilegível), ele
+              ganha uma largura mínima proporcional ao número de provas e
+              rola horizontalmente dentro do card — mesma ideia já usada
+              nas tabelas com muitas colunas. */}
+          <div className="chart-scroll">
+            <div style={{ minWidth: Math.max(pontos.length * 56, 480) }}>
+              <ResponsiveContainer width="100%" height={440}>
+                <LineChart data={pontos} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1b2330" />
+                  <XAxis dataKey="provaLabel" stroke="#69778b" fontSize={11} />
+                  <YAxis stroke="#69778b" fontSize={11} />
+                  <Tooltip contentStyle={{ background: '#0e141e', border: '1px solid #202a38', borderRadius: 8, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {series.map((s) => (
+                    <Line key={s.chave} type="monotone" dataKey={s.chave} name={s.nome} stroke={s.cor} strokeWidth={2.5} dot={{ r: 3 }} />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
       )}
     </div>
