@@ -1,0 +1,84 @@
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import type { Session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabaseClient';
+import BrandMark from './BrandMark';
+
+/**
+ * Login real via Supabase Auth (e-mail + senha), substituindo a antiga
+ * cortina de senha (VITE_APP_PASSWORD/Gate.tsx). Agora ler ou gravar
+ * qualquer dado exige um usuário autenticado — ver
+ * supabase/migrations/0005_auth.sql.
+ *
+ * Não existe cadastro público aqui de propósito: para criar os primeiros
+ * usuários (você e quem mais for administrar a liga), use o Supabase
+ * Dashboard > Authentication > Users > Add user (e-mail + senha).
+ */
+export default function AuthGate({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null | undefined>(undefined); // undefined = ainda carregando
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [entrando, setEntrando] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: assinatura } = supabase.auth.onAuthStateChange((_evento, novaSessao) => {
+      setSession(novaSessao);
+    });
+    return () => assinatura.subscription.unsubscribe();
+  }, []);
+
+  async function entrar(e: FormEvent) {
+    e.preventDefault();
+    setErro(null);
+    setEntrando(true);
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
+    setEntrando(false);
+    if (error) setErro('E-mail ou senha incorretos.');
+  }
+
+  // ainda checando se já existe sessão salva — evita "piscar" a tela de login
+  if (session === undefined) {
+    return (
+      <div className="gate-screen">
+        <BrandMark size={44} />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="gate-screen">
+        <form className="gate-card" onSubmit={entrar}>
+          <BrandMark size={44} />
+          <strong>Grid Manager</strong>
+          <input
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setErro(null);
+            }}
+            autoFocus
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => {
+              setSenha(e.target.value);
+              setErro(null);
+            }}
+          />
+          <button type="submit" className="btn-primary" disabled={entrando}>
+            {entrando ? 'Entrando...' : 'Entrar'}
+          </button>
+          {erro && <p className="error">{erro}</p>}
+        </form>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}

@@ -1,0 +1,13 @@
+<svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="34" height="34" rx="8" fill="#12161f" />
+  <rect width="34" height="34" rx="8" fill="url(#fm-badge-grad)" fill-opacity="0.5" />
+  <path d="M8 23L14.5 11H21.5L15 23H8Z" fill="#e10600" />
+  <path d="M17.5 23L23 13H27.5L22 23H17.5Z" fill="#e10600" fill-opacity="0.72" />
+  <path d="M24 23L27.5 16.5H30L26.5 23H24Z" fill="#e10600" fill-opacity="0.42" />
+  <defs>
+    <linearGradient id="fm-badge-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e10600" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#e10600" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+</svg>
