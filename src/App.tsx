@@ -11,6 +11,7 @@ import AnoPage from './pages/AnoPage';
 import ParametrosPage from './pages/ParametrosPage';
 import PontuacaoPage from './pages/PontuacaoPage';
 import CalendarioPage from './pages/CalendarioPage';
+import BandeirasPage from './pages/BandeirasPage';
 import PilotosPage from './pages/PilotosPage';
 import EquipesPage from './pages/EquipesPage';
 import TimesPage from './pages/TimesPage';
@@ -28,6 +29,7 @@ const PAGES: Record<PageKey, JSX.Element> = {
   parametros: <ParametrosPage />,
   pontuacao: <PontuacaoPage />,
   calendario: <CalendarioPage />,
+  bandeiras: <BandeirasPage />,
   pilotos: <PilotosPage />,
   equipes: <EquipesPage />,
   times: <TimesPage />,

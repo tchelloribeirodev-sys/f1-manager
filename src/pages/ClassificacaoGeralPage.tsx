@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { CardRanking, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
+import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
+import type { TbBandeira } from '../lib/types';
 import {
   calcularClassificacaoEquipes,
   calcularClassificacaoPilotos,
@@ -13,6 +15,14 @@ export default function ClassificacaoGeralPage() {
   const { anoJogo, tipoCarreira, temporada } = useAppContext();
   const [dados, setDados] = useState<DadosTemporada | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [bandeiras, setBandeiras] = useState<TbBandeira[]>([]);
+  const mapaBandeiras = useMemo(() => mapaPorCodigo(bandeiras), [bandeiras]);
+
+  // catálogo de bandeiras é global (cadastrado na tela "Bandeiras", ver
+  // src/lib/bandeiras.ts) — não depende do ano/temporada selecionados
+  useEffect(() => {
+    carregarBandeiras().then(setBandeiras);
+  }, []);
 
   useEffect(() => {
     async function carregar() {
@@ -185,7 +195,9 @@ export default function ClassificacaoGeralPage() {
                   <th key={p.id}>
                     <div className="race-col-head">
                       <span className="flag-chip">
-                        {p.bandeira && <img src={`/flags/${p.bandeira}.png`} alt={p.bandeira} />}
+                        {p.bandeira && mapaBandeiras[p.bandeira] && (
+                          <img src={mapaBandeiras[p.bandeira]} alt={p.bandeira} />
+                        )}
                         <span>{p.abreviacao_prova}</span>
                       </span>
                       <span className="tags">

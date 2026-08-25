@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { f1 } from '../lib/supabaseClient';
 import { useAppContext } from '../context/AppContext';
-import { BANDEIRAS } from '../lib/flags';
-import type { TbProva } from '../lib/types';
+import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
+import type { TbBandeira, TbProva } from '../lib/types';
 
 export default function CalendarioPage() {
   const { anoJogo } = useAppContext();
   const [provas, setProvas] = useState<TbProva[]>([]);
+  const [bandeiras, setBandeiras] = useState<TbBandeira[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [ordem, setOrdem] = useState('');
   const [nome, setNome] = useState('');
@@ -15,6 +16,13 @@ export default function CalendarioPage() {
   const [sprint, setSprint] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const nomeRef = useRef<HTMLInputElement>(null);
+  const mapaBandeiras = mapaPorCodigo(bandeiras);
+
+  // catálogo de bandeiras é global (não depende do ano do jogo) — cadastrado
+  // na tela "Bandeiras" (ver src/lib/bandeiras.ts)
+  useEffect(() => {
+    carregarBandeiras().then(setBandeiras);
+  }, []);
 
   async function carregar() {
     if (!anoJogo) return setProvas([]);
@@ -87,6 +95,11 @@ export default function CalendarioPage() {
 
   return (
     <div>
+      <div className="banner-info">
+        Equivalente à tela &quot;Cadastro de Provas&quot; do Delphi (Tb_Prova), com a bandeira do
+        país exibida ao lado do nome — usada depois no grid de Classificação Prova a Prova.
+      </div>
+
       {erro && <div className="banner-error">{erro}</div>}
 
       {!anoJogo ? (
@@ -120,7 +133,7 @@ export default function CalendarioPage() {
               <div className="select-wrap">
                 <select value={bandeira} onChange={(e) => setBandeira(e.target.value)}>
                   <option value="">sem bandeira</option>
-                  {BANDEIRAS.map((b) => (
+                  {bandeiras.map((b) => (
                     <option key={b.codigo} value={b.codigo}>
                       {b.codigo} — {b.nome}
                     </option>
@@ -160,7 +173,9 @@ export default function CalendarioPage() {
                       <td>{String(p.ordem).padStart(2, '0')}</td>
                       <td>
                         <span className="flag-chip">
-                          {p.bandeira && <img src={`/flags/${p.bandeira}.png`} alt={p.bandeira} />}
+                          {p.bandeira && mapaBandeiras[p.bandeira] && (
+                            <img src={mapaBandeiras[p.bandeira]} alt={p.bandeira} />
+                          )}
                           {p.nome_prova}
                         </span>
                       </td>

@@ -34,6 +34,7 @@ const GRUPOS: { titulo: string; icone: typeof Flag; itens: Item[] }[] = [
       { key: 'parametros', label: 'Parâmetros', icon: SlidersHorizontal },
       { key: 'pontuacao', label: 'Pontuação', icon: ListOrdered },
       { key: 'calendario', label: 'Calendário / Provas', icon: Flag },
+      { key: 'bandeiras', label: 'Bandeiras', icon: Flag },
       { key: 'pilotos', label: 'Pilotos', icon: Users },
       { key: 'equipes', label: 'Equipes', icon: Gauge },
       { key: 'times', label: 'Times', icon: UserCog },

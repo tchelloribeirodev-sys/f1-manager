@@ -3,6 +3,7 @@ export type PageKey =
   | 'parametros'
   | 'pontuacao'
   | 'calendario'
+  | 'bandeiras'
   | 'pilotos'
   | 'equipes'
   | 'times'
@@ -20,6 +21,7 @@ export const PAGE_TITLES: Record<PageKey, string> = {
   parametros: 'Parâmetros do ano',
   pontuacao: 'Pontuação',
   calendario: 'Calendário / Provas',
+  bandeiras: 'Bandeiras',
   pilotos: 'Pilotos',
   equipes: 'Equipes',
   times: 'Times',

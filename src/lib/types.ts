@@ -31,6 +31,15 @@ export interface TbProva {
   bandeira: string | null;
 }
 
+// Catálogo de bandeiras (ver supabase/migrations/0008_bandeiras.sql) — cadastrado
+// pela tela "Bandeiras" do app, sem precisar mexer em código/deploy.
+export interface TbBandeira {
+  id: number;
+  codigo: string;
+  nome: string;
+  url_imagem: string;
+}
+
 export interface TbPiloto {
   id: number;
   ano_jogo: number;
