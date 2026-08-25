@@ -81,6 +81,9 @@ select { appearance:none; border:1px solid #293443; background:#111722; color:#e
 table { width:100%; min-width:720px; border-collapse:collapse; }
 th { padding:12px 14px; background:#111822; color:#68768a; text-align:left; font-size:9px; letter-spacing:.11em; font-weight:800; }
 td { padding:13px 14px; border-top:1px solid #1b2330; color:#aab4c3; font-size:12px; white-space:nowrap; }
+/* linhas mais finas, usado no grid da Classificação Geral */
+.table-card--tight th { padding:8px 14px; }
+.table-card--tight td { padding:7px 14px; }
 tr:hover td { background:#101720; }
 
 /* Grid com muitas provas (Classificação Geral/Por Prova): mantém a coluna
@@ -97,6 +100,19 @@ tr:hover td { background:#101720; }
 .table-card--sticky-first th:first-child { z-index: 3; }
 .table-card--sticky-first td:first-child { z-index: 2; background: #0d131c; }
 .table-card--sticky-first tr:hover td:first-child { background: #101720; }
+
+/* Mesma ideia, agora fixando a ÚLTIMA coluna (PTS) do lado direito — usada
+   junto com --sticky-first só na Classificação Geral, pra sempre ver o
+   total de pontos de cada piloto mesmo rolando até a prova mais recente. */
+.table-card--sticky-last th:last-child,
+.table-card--sticky-last td:last-child {
+  position: sticky;
+  right: 0;
+  box-shadow: -3px 0 6px rgba(0,0,0,.35);
+}
+.table-card--sticky-last th:last-child { z-index: 3; }
+.table-card--sticky-last td:last-child { z-index: 2; background: #0d131c; }
+.table-card--sticky-last tr:hover td:last-child { background: #101720; }
 .position { width:25px; height:25px; border-radius:7px; display:grid; place-items:center; color:#7b8798; font-weight:800; font-size:11px; }
 .top-1 { background:#c89b3c; color:#1b1407; }.top-2 { background:#9aa5b4; color:#111; }.top-3 { background:#9a6546; color:#fff; }
 .driver-cell,.team-cell { display:flex; align-items:center; gap:9px; }
@@ -235,7 +251,7 @@ tr.row-editing td { background:#151b25; }
 @media (max-width:760px){ .tower-cols{ grid-template-columns:1fr; } }
 .tower-col-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:#8d9bb0; margin-bottom:8px; }
 .tower { border:1px solid #202a38; border-radius:10px; overflow:hidden; background:#0d131c; }
-.trow { display:grid; grid-template-columns:32px 1fr auto auto; align-items:center; gap:12px; padding:9px 14px 9px 0; border-bottom:1px solid #202a38; position:relative; background:#0e141e; transition:background .12s ease; }
+.trow { display:grid; grid-template-columns:32px 1fr auto auto; align-items:center; gap:12px; padding:6px 14px 6px 0; border-bottom:1px solid #202a38; position:relative; background:#0e141e; transition:background .12s ease; }
 .trow:last-child { border-bottom:none; }
 .trow:hover { background:#141b25; }
 .trow::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--tc,#68768a); }

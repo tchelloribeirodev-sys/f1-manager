@@ -175,7 +175,7 @@ export default function ClassificacaoGeralPage() {
           <h2>Classificação prova a prova</h2>
         </div>
       </div>
-      <div className="table-card table-card--sticky-first">
+      <div className="table-card table-card--sticky-first table-card--sticky-last table-card--tight">
         <div className="table-scroll">
           <table>
             <thead>

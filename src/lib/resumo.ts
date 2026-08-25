@@ -45,7 +45,13 @@ export function gerarResumoProva(dados: DadosTemporada, prova: TbProva): string 
     );
   }
 
-  const classificacao = calcularClassificacaoPilotos(dados);
+  // Classificação ATÉ esta prova (não a do campeonato inteiro) — mesma
+  // lógica já usada em "Classificação Prova a Prova": só entram no cálculo
+  // as provas com ordem <= a desta, senão o resumo de uma prova antiga
+  // (ex.: a 1ª) acabava mostrando o total de pontos já acumulado até hoje,
+  // e não o que valia naquele momento do campeonato.
+  const idsProvasAteAqui = new Set(dados.provas.filter((p) => p.ordem <= prova.ordem).map((p) => p.id));
+  const classificacao = calcularClassificacaoPilotos(dados, idsProvasAteAqui);
   if (classificacao.length >= 2) {
     const [lider, vice] = classificacao;
     const diferenca = lider.pontos - vice.pontos;
