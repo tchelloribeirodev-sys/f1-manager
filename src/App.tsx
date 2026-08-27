@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
+import MainMenu from './components/MainMenu';
 import ContextSelectors from './components/ContextSelectors';
 import AuthGate from './components/AuthGate';
 import BrandMark from './components/BrandMark';
@@ -86,6 +87,8 @@ function AppShell() {
       {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}
 
       <main className="main">
+        <MainMenu page={page} onNavigate={setPage} />
+
         <header className="topbar">
           <div className="topbar-row">
             <button className="icon-button mobile-menu" onClick={() => setMenuOpen(true)}>

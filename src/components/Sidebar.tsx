@@ -1,66 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-  CalendarDays,
-  SlidersHorizontal,
-  ListOrdered,
-  Flag,
-  Users,
-  Gauge,
-  UserCog,
-  Trophy,
-  Award,
-  Table2,
-  Medal,
-  ClipboardList,
-  ArrowLeftRight,
-  LineChart,
-  ChevronRight,
-  FolderCog,
-  LogOut,
-  X
-} from 'lucide-react';
+import { ChevronRight, LogOut, X } from 'lucide-react';
 import type { PageKey } from '../pages';
 import { supabase } from '../lib/supabaseClient';
+import { GRUPOS } from '../lib/menuGroups';
 import BrandMark from './BrandMark';
-
-type Item = { key: PageKey; label: string; icon: typeof Flag };
-
-const GRUPOS: { titulo: string; icone: typeof Flag; itens: Item[] }[] = [
-  {
-    titulo: 'Cadastros',
-    icone: FolderCog,
-    itens: [
-      { key: 'ano', label: 'Ano do jogo', icon: CalendarDays },
-      { key: 'parametros', label: 'Parâmetros', icon: SlidersHorizontal },
-      { key: 'pontuacao', label: 'Pontuação', icon: ListOrdered },
-      { key: 'calendario', label: 'Calendário / Provas', icon: Flag },
-      { key: 'bandeiras', label: 'Bandeiras', icon: Flag },
-      { key: 'pilotos', label: 'Pilotos', icon: Users },
-      { key: 'equipes', label: 'Equipes', icon: Gauge },
-      { key: 'times', label: 'Times', icon: UserCog },
-      { key: 'recordesCadastro', label: 'Cadastro de Recordes', icon: ClipboardList }
-    ]
-  },
-  {
-    titulo: 'Resultados',
-    icone: Trophy,
-    itens: [
-      { key: 'provaAProva', label: 'Prova a Prova', icon: Trophy },
-      { key: 'classificacaoGeral', label: 'Classificação Geral', icon: Award },
-      { key: 'classificacaoPorProva', label: 'Classificação Prova a Prova', icon: Table2 },
-      { key: 'recordes', label: 'Recordes', icon: Medal },
-      { key: 'confronto', label: 'Cara a Cara', icon: ArrowLeftRight }
-    ]
-  },
-  {
-    titulo: 'Dashboards',
-    icone: LineChart,
-    itens: [
-      { key: 'dashboardPilotos', label: 'Pilotos', icon: LineChart },
-      { key: 'dashboardEquipes', label: 'Equipes', icon: LineChart }
-    ]
-  }
-];
 
 interface Props {
   page: PageKey;
