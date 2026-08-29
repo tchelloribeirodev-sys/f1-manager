@@ -159,7 +159,7 @@ export default function ClassificacaoGeralPage() {
       <div className="tower-cols">
         <div>
           <div className="tower-col-title">Pilotos</div>
-          <TorrePilotos linhas={pilotos} />
+          <TorrePilotos linhas={pilotos} mapaBandeiras={mapaBandeiras} />
         </div>
         <div>
           <div className="tower-col-title">Equipes</div>
@@ -216,8 +216,18 @@ export default function ClassificacaoGeralPage() {
                   <td>
                     <div className="driver-cell">
                       <span className={i < 3 ? `position top-${i + 1}` : 'position'}>{i + 1}</span>
-                      <span className="team-dot" style={{ background: piloto.corEquipe }} />
+                      {piloto.paisPiloto && mapaBandeiras[piloto.paisPiloto] && (
+                        <span className="flag-chip">
+                          <img src={mapaBandeiras[piloto.paisPiloto]} alt={piloto.paisPiloto} />
+                        </span>
+                      )}
+                      <span className="team-dot" style={{ background: piloto.corEquipe }} title={piloto.nomeEquipe} />
                       <strong>{piloto.nomePiloto}</strong>
+                      {piloto.imagemEquipe && (
+                        <span className="team-logo" title={piloto.nomeEquipe}>
+                          <img src={piloto.imagemEquipe} alt={piloto.nomeEquipe} />
+                        </span>
+                      )}
                     </div>
                   </td>
                   {dados.provas.map((p) => {

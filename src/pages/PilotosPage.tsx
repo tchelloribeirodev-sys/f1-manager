@@ -1,18 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { f1 } from '../lib/supabaseClient';
 import { useAppContext } from '../context/AppContext';
+import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
 import { ANO_APOSENTADO } from '../lib/types';
-import type { TbPiloto } from '../lib/types';
+import type { TbBandeira, TbPiloto } from '../lib/types';
 
 export default function PilotosPage() {
   const { anoJogo, tipoCarreira } = useAppContext();
   const [pilotos, setPilotos] = useState<TbPiloto[]>([]);
+  const [bandeiras, setBandeiras] = useState<TbBandeira[]>([]);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [nome, setNome] = useState('');
   const [abrev, setAbrev] = useState('');
+  const [pais, setPais] = useState('');
   const [aposentado, setAposentado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const nomeRef = useRef<HTMLInputElement>(null);
+  const mapaBandeiras = mapaPorCodigo(bandeiras);
 
   async function carregar() {
     if (!anoJogo) return setPilotos([]);
@@ -24,6 +28,11 @@ export default function PilotosPage() {
     setPilotos((data as TbPiloto[]) ?? []);
   }
 
+  // catálogo de bandeiras é global (tela "Bandeiras"), não depende do ano/carreira
+  useEffect(() => {
+    carregarBandeiras().then(setBandeiras);
+  }, []);
+
   useEffect(() => {
     carregar();
     cancelarEdicao();
@@ -34,6 +43,7 @@ export default function PilotosPage() {
     setEditandoId(p.id);
     setNome(p.nome_piloto);
     setAbrev(p.abreviacao_piloto);
+    setPais(p.pais ?? '');
     setAposentado(p.aposentado);
     setErro(null);
     nomeRef.current?.focus();
@@ -43,6 +53,7 @@ export default function PilotosPage() {
     setEditandoId(null);
     setNome('');
     setAbrev('');
+    setPais('');
     setAposentado(false);
   }
 
@@ -59,6 +70,7 @@ export default function PilotosPage() {
       ano_jogo,
       nome_piloto: nome.trim(),
       abreviacao_piloto: abrev.trim().toUpperCase(),
+      pais: pais || null,
       aposentado,
       tipo_carreira: tipoCarreira
     };
@@ -111,6 +123,19 @@ export default function PilotosPage() {
                 style={{ width: 80, textTransform: 'uppercase' }}
               />
             </div>
+            <div className="field">
+              <label>País (bandeira)</label>
+              <div className="select-wrap">
+                <select value={pais} onChange={(e) => setPais(e.target.value)}>
+                  <option value="">Sem bandeira</option>
+                  {bandeiras.map((b) => (
+                    <option key={b.id} value={b.codigo}>
+                      {b.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div className="checkbox-field">
               <input
                 type="checkbox"
@@ -135,6 +160,7 @@ export default function PilotosPage() {
               <table>
                 <thead>
                   <tr>
+                    <th>País</th>
                     <th>Piloto</th>
                     <th>Sigla</th>
                     <th>Ano</th>
@@ -145,6 +171,13 @@ export default function PilotosPage() {
                 <tbody>
                   {pilotos.map((p) => (
                     <tr key={p.id} className={editandoId === p.id ? 'row-editing' : undefined}>
+                      <td>
+                        {p.pais && mapaBandeiras[p.pais] && (
+                          <span className="flag-chip">
+                            <img src={mapaBandeiras[p.pais]} alt={p.pais} />
+                          </span>
+                        )}
+                      </td>
                       <td>{p.nome_piloto}</td>
                       <td>{p.abreviacao_piloto}</td>
                       <td>{p.ano_jogo}</td>
@@ -161,7 +194,7 @@ export default function PilotosPage() {
                   ))}
                   {pilotos.length === 0 && (
                     <tr className="empty-row">
-                      <td colSpan={5}>Nenhum piloto cadastrado para este ano/carreira.</td>
+                      <td colSpan={6}>Nenhum piloto cadastrado para este ano/carreira.</td>
                     </tr>
                   )}
                 </tbody>

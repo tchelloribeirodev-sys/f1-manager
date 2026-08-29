@@ -9,7 +9,15 @@ function gapPara(pontosLider: number, pontos: number) {
   return diff === 0 ? '—' : `-${diff}`;
 }
 
-export function TorrePilotos({ linhas, compact = false }: { linhas: LinhaClassificacao[]; compact?: boolean }) {
+export function TorrePilotos({
+  linhas,
+  compact = false,
+  mapaBandeiras = {}
+}: {
+  linhas: LinhaClassificacao[];
+  compact?: boolean;
+  mapaBandeiras?: Record<string, string>;
+}) {
   const lider = linhas[0]?.pontos ?? 0;
   return (
     <div className="tower">
@@ -21,6 +29,11 @@ export function TorrePilotos({ linhas, compact = false }: { linhas: LinhaClassif
         >
           <div className="t-pos">{i + 1}</div>
           <div className="t-name">
+            {p.paisPiloto && mapaBandeiras[p.paisPiloto] && (
+              <span className="flag-chip">
+                <img src={mapaBandeiras[p.paisPiloto]} alt={p.paisPiloto} />
+              </span>
+            )}
             <strong>{p.nomePiloto}</strong>
           </div>
           <div className="t-pts">{p.pontos}</div>
@@ -40,6 +53,11 @@ export function TorreEquipes({ linhas }: { linhas: LinhaEquipe[] }) {
         <div key={eq.idEquipe} className={i === 0 ? 'trow p1' : 'trow'} style={{ '--tc': eq.corEquipe } as CSSProperties}>
           <div className="t-pos">{i + 1}</div>
           <div className="t-name">
+            {eq.imagemEquipe && (
+              <span className="team-logo">
+                <img src={eq.imagemEquipe} alt={eq.nomeEquipe} />
+              </span>
+            )}
             <strong>{eq.nomeEquipe}</strong>
           </div>
           <div className="t-pts">{eq.pontos}</div>

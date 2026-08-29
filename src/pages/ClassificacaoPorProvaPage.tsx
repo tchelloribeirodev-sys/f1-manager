@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { CardRanking, TorrePilotos } from '../components/ClassificacaoTables';
+import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
+import type { TbBandeira } from '../lib/types';
 import {
   calcularClassificacaoPilotos,
   carregarDadosTemporada,
@@ -12,6 +14,13 @@ export default function ClassificacaoPorProvaPage() {
   const [dados, setDados] = useState<DadosTemporada | null>(null);
   const [provaId, setProvaId] = useState<number | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [bandeiras, setBandeiras] = useState<TbBandeira[]>([]);
+  const mapaBandeiras = useMemo(() => mapaPorCodigo(bandeiras), [bandeiras]);
+
+  // catálogo de bandeiras é global (tela "Bandeiras"), não depende do ano/temporada
+  useEffect(() => {
+    carregarBandeiras().then(setBandeiras);
+  }, []);
 
   useEffect(() => {
     async function carregar() {
@@ -121,7 +130,7 @@ export default function ClassificacaoPorProvaPage() {
           <h2>Pontos até esta prova</h2>
         </div>
       </div>
-      <TorrePilotos linhas={pilotos} compact />
+      <TorrePilotos linhas={pilotos} compact mapaBandeiras={mapaBandeiras} />
 
       <div className="section-head" style={{ marginTop: 28 }}>
         <div>

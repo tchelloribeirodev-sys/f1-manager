@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { f1 } from '../lib/supabaseClient';
 import { useAppContext } from '../context/AppContext';
-import type { TbProva, TbResultado, TbResultadoSprint } from '../lib/types';
+import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
+import type { TbBandeira, TbProva, TbResultado, TbResultadoSprint } from '../lib/types';
 import { carregarDadosTemporada } from '../lib/classificacao';
 import { gerarResumoProva } from '../lib/resumo';
 import { sobrenome, sobrenomesComDesambiguacao } from '../lib/nomes';
@@ -9,9 +10,11 @@ import { sobrenome, sobrenomesComDesambiguacao } from '../lib/nomes';
 type Roster = {
   idPiloto: number;
   nomePiloto: string;
+  paisPiloto: string | null;
   idEquipe: number;
   nomeEquipe: string;
   corEquipe: string;
+  imagemEquipe: string | null;
 };
 
 type LinhaForm = {
@@ -40,6 +43,14 @@ export default function ProvaAProvaPage() {
 
   const [resumo, setResumo] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+
+  const [bandeiras, setBandeiras] = useState<TbBandeira[]>([]);
+  const mapaBandeiras = useMemo(() => mapaPorCodigo(bandeiras), [bandeiras]);
+
+  // catálogo de bandeiras é global (tela "Bandeiras"), não depende do ano/temporada
+  useEffect(() => {
+    carregarBandeiras().then(setBandeiras);
+  }, []);
 
   const provaAtual = useMemo(() => provas.find((p) => p.id === provaId) ?? null, [provas, provaId]);
 
@@ -75,7 +86,9 @@ export default function ProvaAProvaPage() {
         f1().from('tb_prova').select('*').eq('ano_jogo', anoJogo).order('ordem'),
         f1()
           .from('tb_time')
-          .select('id_piloto, id_equipe, tb_piloto(nome_piloto), tb_equipe(nome_equipe, cor_equipe)')
+          .select(
+            'id_piloto, id_equipe, tb_piloto(nome_piloto, pais), tb_equipe(nome_equipe, cor_equipe, imagem_url)'
+          )
           .eq('ano_jogo', anoJogo)
           .eq('tipo_carreira', tipoCarreira)
           .eq('temporada', temporada)
@@ -89,9 +102,11 @@ export default function ProvaAProvaPage() {
       const listaRoster: Roster[] = ((timeData as any[]) ?? []).map((t) => ({
         idPiloto: t.id_piloto,
         nomePiloto: t.tb_piloto?.nome_piloto ?? `#${t.id_piloto}`,
+        paisPiloto: t.tb_piloto?.pais ?? null,
         idEquipe: t.id_equipe,
         nomeEquipe: t.tb_equipe?.nome_equipe ?? `#${t.id_equipe}`,
-        corEquipe: t.tb_equipe?.cor_equipe ?? '#666'
+        corEquipe: t.tb_equipe?.cor_equipe ?? '#666',
+        imagemEquipe: t.tb_equipe?.imagem_url ?? null
       }));
       setRoster(listaRoster);
       if (listaRoster.length === 0) {
@@ -437,6 +452,11 @@ export default function ProvaAProvaPage() {
                       <tr key={r.idPiloto}>
                         <td>
                           <div className="driver-cell">
+                            {r.paisPiloto && mapaBandeiras[r.paisPiloto] && (
+                              <span className="flag-chip">
+                                <img src={mapaBandeiras[r.paisPiloto]} alt={r.paisPiloto} />
+                              </span>
+                            )}
                             <strong>{r.nomePiloto}</strong>
                           </div>
                         </td>
@@ -444,6 +464,11 @@ export default function ProvaAProvaPage() {
                           <div className="team-cell">
                             <span className="team-dot" style={{ background: r.corEquipe }} />
                             {r.nomeEquipe}
+                            {r.imagemEquipe && (
+                              <span className="team-logo">
+                                <img src={r.imagemEquipe} alt={r.nomeEquipe} />
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td>

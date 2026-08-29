@@ -209,6 +209,15 @@ tr:hover td { background:#101720; }
 .flag-chip img { width:20px; height:14px; object-fit:cover; border-radius:2px; border:1px solid #202a38; }
 .color-dot { width:20px; height:20px; border-radius:6px; display:inline-block; border:1px solid rgba(255,255,255,.15); vertical-align:middle; margin-right:6px; }
 
+/* Imagem/logo da equipe — usada no lugar do color-dot quando a equipe tem
+ * imagem cadastrada (Cadastros > Equipes). Ver EquipesPage, ProvaAProvaPage,
+ * ClassificacaoGeralPage e ClassificacaoTables. */
+.team-logo { display:inline-flex; align-items:center; flex-shrink:0; }
+.team-logo img {
+  width:22px; height:22px; object-fit:contain; border-radius:5px;
+  border:1px solid rgba(255,255,255,.15); background:#0d1119; vertical-align:middle;
+}
+
 .empty-row td { color:#596679; font-style:italic; }
 
 .banner-warn { border:1px solid #4a3410; background:#221607; color:#f0c15c; border-radius:10px; padding:11px 14px; font-size:12px; margin-bottom:18px; }

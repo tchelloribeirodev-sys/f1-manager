@@ -56,6 +56,7 @@ export interface TbEquipe {
   nome_equipe: string;
   cor_equipe: string;
   tipo_carreira: TipoCarreira;
+  imagem_url: string | null;
 }
 
 export interface TbTime {

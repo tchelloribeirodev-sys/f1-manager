@@ -5,9 +5,11 @@ export type RosterItem = {
   idPiloto: number;
   nomePiloto: string;
   abreviacaoPiloto: string;
+  paisPiloto: string | null;
   idEquipe: number;
   nomeEquipe: string;
   corEquipe: string;
+  imagemEquipe: string | null;
 };
 
 export type DadosTemporada = {
@@ -41,7 +43,9 @@ export async function carregarDadosTemporada(
     f1().from('tb_prova').select('*').eq('ano_jogo', anoJogo).order('ordem'),
     f1()
       .from('tb_time')
-      .select('id_piloto, id_equipe, tb_piloto(nome_piloto, abreviacao_piloto), tb_equipe(nome_equipe, cor_equipe)')
+      .select(
+        'id_piloto, id_equipe, tb_piloto(nome_piloto, abreviacao_piloto, pais), tb_equipe(nome_equipe, cor_equipe, imagem_url)'
+      )
       .eq('ano_jogo', anoJogo)
       .eq('tipo_carreira', tipoCarreira)
       .eq('temporada', temporada)
@@ -67,9 +71,11 @@ export async function carregarDadosTemporada(
     idPiloto: t.id_piloto,
     nomePiloto: t.tb_piloto?.nome_piloto ?? `#${t.id_piloto}`,
     abreviacaoPiloto: t.tb_piloto?.abreviacao_piloto ?? '???',
+    paisPiloto: t.tb_piloto?.pais ?? null,
     idEquipe: t.id_equipe,
     nomeEquipe: t.tb_equipe?.nome_equipe ?? `#${t.id_equipe}`,
-    corEquipe: t.tb_equipe?.cor_equipe ?? '#666'
+    corEquipe: t.tb_equipe?.cor_equipe ?? '#666',
+    imagemEquipe: t.tb_equipe?.imagem_url ?? null
   }));
 
   const pontosPorPosicao: Record<number, number> = {};
@@ -100,9 +106,11 @@ export async function carregarDadosTemporada(
 export type LinhaClassificacao = {
   idPiloto: number;
   nomePiloto: string;
+  paisPiloto: string | null;
   idEquipe: number;
   nomeEquipe: string;
   corEquipe: string;
+  imagemEquipe: string | null;
   pontos: number;
   vitorias: number;
   poles: number;
@@ -122,9 +130,11 @@ export function calcularClassificacaoPilotos(
     acumulado[r.idPiloto] = {
       idPiloto: r.idPiloto,
       nomePiloto: r.nomePiloto,
+      paisPiloto: r.paisPiloto,
       idEquipe: r.idEquipe,
       nomeEquipe: r.nomeEquipe,
       corEquipe: r.corEquipe,
+      imagemEquipe: r.imagemEquipe,
       pontos: 0,
       vitorias: 0,
       poles: 0,
@@ -163,6 +173,7 @@ export type LinhaEquipe = {
   idEquipe: number;
   nomeEquipe: string;
   corEquipe: string;
+  imagemEquipe: string | null;
   pontos: number;
   vitorias: number;
   poles: number;
@@ -180,6 +191,7 @@ export function calcularClassificacaoEquipes(pilotos: LinhaClassificacao[]): Lin
         idEquipe: p.idEquipe,
         nomeEquipe: p.nomeEquipe,
         corEquipe: p.corEquipe,
+        imagemEquipe: p.imagemEquipe,
         pontos: 0,
         vitorias: 0,
         poles: 0,
