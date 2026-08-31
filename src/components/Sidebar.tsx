@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ChevronRight, LogOut, X } from 'lucide-react';
+import { ChevronRight, LogOut, Moon, Sun, X } from 'lucide-react';
 import type { PageKey } from '../pages';
 import { supabase } from '../lib/supabaseClient';
 import { GRUPOS } from '../lib/menuGroups';
+import { useTheme } from '../context/ThemeContext';
 import BrandMark from './BrandMark';
 
 interface Props {
@@ -19,6 +20,7 @@ export default function Sidebar({ page, onNavigate, menuOpen, onCloseMenu }: Pro
     Dashboards: true
   });
   const [email, setEmail] = useState<string | null>(null);
+  const { tema, alternarTema } = useTheme();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
@@ -75,6 +77,13 @@ export default function Sidebar({ page, onNavigate, menuOpen, onCloseMenu }: Pro
       <div className="sidebar-footer">
         <div className="sidebar-user">
           <span title={email ?? ''}>{email ?? '—'}</span>
+          <button
+            className="icon-button theme-toggle"
+            title={tema === 'dark' ? 'Tema claro' : 'Tema escuro'}
+            onClick={alternarTema}
+          >
+            {tema === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <button className="icon-button" title="Sair" onClick={() => supabase.auth.signOut()}>
             <LogOut size={15} />
           </button>

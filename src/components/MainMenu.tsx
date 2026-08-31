@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, LogOut } from 'lucide-react';
+import { ChevronDown, LogOut, Moon, Sun } from 'lucide-react';
 import type { PageKey } from '../pages';
 import { supabase } from '../lib/supabaseClient';
 import { GRUPOS } from '../lib/menuGroups';
+import { useTheme } from '../context/ThemeContext';
 import BrandMark from './BrandMark';
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 export default function MainMenu({ page, onNavigate }: Props) {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const { tema, alternarTema } = useTheme();
   const wrapRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -83,6 +85,13 @@ export default function MainMenu({ page, onNavigate }: Props) {
 
       <div className="main-menu-user">
         <span title={email ?? ''}>{email ?? '—'}</span>
+        <button
+          className="icon-button theme-toggle"
+          title={tema === 'dark' ? 'Tema claro' : 'Tema escuro'}
+          onClick={alternarTema}
+        >
+          {tema === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+        </button>
         <button className="icon-button" title="Sair" onClick={() => supabase.auth.signOut()}>
           <LogOut size={15} />
         </button>

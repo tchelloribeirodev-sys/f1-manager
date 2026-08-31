@@ -7,6 +7,7 @@ import AuthGate from './components/AuthGate';
 import BrandMark from './components/BrandMark';
 import { f1 } from './lib/supabaseClient';
 import { AppContextProvider } from './context/AppContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { PAGE_TITLES, type PageKey } from './pages';
 import AnoPage from './pages/AnoPage';
 import ParametrosPage from './pages/ParametrosPage';
@@ -110,10 +111,12 @@ function AppShell() {
 
 export default function App() {
   return (
-    <AuthGate>
-      <AppContextProvider>
-        <AppShell />
-      </AppContextProvider>
-    </AuthGate>
+    <ThemeProvider>
+      <AuthGate>
+        <AppContextProvider>
+          <AppShell />
+        </AppContextProvider>
+      </AuthGate>
+    </ThemeProvider>
   );
 }

@@ -85,7 +85,7 @@ export default function ParametrosPage() {
             <label htmlFor="ponto_volta">Ponto extra por volta mais rápida</label>
           </div>
           <button type="submit" className="btn-primary" disabled={salvando}>
-            {salvando ? 'Gravando...' : `Gravar parâmetros do ano ${anoJogo}`}
+            {salvando ? 'Gravando...' : `Gravar`}
           </button>
           {atual && (
             <span style={{ color: '#8d9bb0', fontSize: 12 }}>

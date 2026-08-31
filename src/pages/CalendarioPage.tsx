@@ -95,11 +95,6 @@ export default function CalendarioPage() {
 
   return (
     <div>
-      <div className="banner-info">
-        Equivalente à tela &quot;Cadastro de Provas&quot; do Delphi (Tb_Prova), com a bandeira do
-        país exibida ao lado do nome — usada depois no grid de Classificação Prova a Prova.
-      </div>
-
       {erro && <div className="banner-error">{erro}</div>}
 
       {!anoJogo ? (
