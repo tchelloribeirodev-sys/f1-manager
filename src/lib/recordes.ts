@@ -85,6 +85,84 @@ export async function carregarRecordesAtuais(
   });
 }
 
+export type LinhaVencedorProva = {
+  idProva: number;
+  ordem: number;
+  nomeProva: string;
+  bandeiraProva: string | null;
+  // normalmente um único piloto, mas pode empatar (mais de um piloto com o
+  // mesmo número de vitórias naquela prova especificamente)
+  vencedores: { idPiloto: number; nomePiloto: string; paisPiloto: string | null; vitorias: number }[];
+};
+
+// Maior vencedor de cada prova do calendário, contando TODAS as temporadas já
+// disputadas no ano_jogo selecionado (não só até a temporada corrente) — a
+// prova é a mesma corrida repetida temporada a temporada (tb_prova é
+// cadastrada por ano_jogo, não por temporada), então faz sentido comparar o
+// piloto com mais vitórias ali, na história inteira do ano.
+export async function carregarMaioresVencedoresPorProva(
+  anoJogo: number,
+  tipoCarreira: TipoCarreira
+): Promise<LinhaVencedorProva[]> {
+  const [{ data: provasData }, { data: pilotosData }, resData] = await Promise.all([
+    f1().from('tb_prova').select('id, ordem, nome_prova, bandeira').eq('ano_jogo', anoJogo).order('ordem'),
+    f1().from('tb_piloto').select('id, nome_piloto, pais').eq('ano_jogo', anoJogo).eq('tipo_carreira', tipoCarreira),
+    buscarTudoPaginado<{ id_prova: number; id_piloto: number }>((from, to) =>
+      f1()
+        .from('tb_resultado')
+        .select('id_prova, id_piloto')
+        .eq('ano_jogo', anoJogo)
+        .eq('tipo_carreira', tipoCarreira)
+        .eq('posicao', 1)
+        .range(from, to)
+    )
+  ]);
+
+  const nomePorPiloto = new Map<number, string>();
+  const paisPorPiloto = new Map<number, string | null>();
+  ((pilotosData as { id: number; nome_piloto: string; pais: string | null }[]) ?? []).forEach((p) => {
+    nomePorPiloto.set(p.id, p.nome_piloto);
+    paisPorPiloto.set(p.id, p.pais);
+  });
+
+  // vitoriasPorProva.get(idProva).get(idPiloto) = quantidade de vitórias
+  const vitoriasPorProva = new Map<number, Map<number, number>>();
+  resData.forEach((r) => {
+    const porPiloto = vitoriasPorProva.get(r.id_prova) ?? new Map<number, number>();
+    porPiloto.set(r.id_piloto, (porPiloto.get(r.id_piloto) ?? 0) + 1);
+    vitoriasPorProva.set(r.id_prova, porPiloto);
+  });
+
+  return ((provasData as { id: number; ordem: number; nome_prova: string; bandeira: string | null }[]) ?? []).map(
+    (prova) => {
+      const porPiloto = vitoriasPorProva.get(prova.id);
+      let max = 0;
+      porPiloto?.forEach((qtd) => {
+        if (qtd > max) max = qtd;
+      });
+      const vencedores =
+        max === 0
+          ? []
+          : Array.from(porPiloto!.entries())
+              .filter(([, qtd]) => qtd === max)
+              .map(([idPiloto, qtd]) => ({
+                idPiloto,
+                nomePiloto: nomePorPiloto.get(idPiloto) ?? '?',
+                paisPiloto: paisPorPiloto.get(idPiloto) ?? null,
+                vitorias: qtd
+              }))
+              .sort((a, b) => a.nomePiloto.localeCompare(b.nomePiloto));
+      return {
+        idProva: prova.id,
+        ordem: prova.ordem,
+        nomeProva: prova.nome_prova,
+        bandeiraProva: prova.bandeira,
+        vencedores
+      };
+    }
+  );
+}
+
 // Pilotos elegíveis para receber um registro de recorde: os aposentados
 // (base fixa) + os pilotos do ano_jogo/carreira selecionados atualmente —
 // mesma consulta usada em PilotosPage.
