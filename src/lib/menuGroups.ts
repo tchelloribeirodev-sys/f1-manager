@@ -36,7 +36,7 @@ export const GRUPOS: MenuGroup[] = [
       { key: 'pilotos', label: 'Pilotos', icon: Users },
       { key: 'equipes', label: 'Equipes', icon: Gauge },
       { key: 'times', label: 'Times', icon: UserCog },
-      { key: 'recordesCadastro', label: 'Cadastro de Recordes', icon: ClipboardList }
+      { key: 'recordesCadastro', label: 'Recordes', icon: ClipboardList }
     ]
   },
   {

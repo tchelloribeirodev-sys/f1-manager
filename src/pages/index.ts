@@ -25,7 +25,7 @@ export const PAGE_TITLES: Record<PageKey, string> = {
   pilotos: 'Pilotos',
   equipes: 'Equipes',
   times: 'Times',
-  recordesCadastro: 'Cadastro de Recordes',
+  recordesCadastro: 'Recordes',
   provaAProva: 'Prova a Prova',
   classificacaoGeral: 'Classificação Geral',
   classificacaoPorProva: 'Classificação Prova a Prova',

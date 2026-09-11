@@ -203,7 +203,8 @@ export default function RecordesCadastroPage() {
               incluir: true
             });
           } catch (e: any) {
-            resultado.push({ idPiloto: p.id, nomePiloto: p.nome_piloto, aposentado: p.aposentado, status: 'erro', incluir: false, jaGravado, mensagemErro: e?.message });
+            const mensagemErro = e instanceof Error ? e.message : String(e || 'Erro desconhecido ao consultar a Jolpica-F1.');
+            resultado.push({ idPiloto: p.id, nomePiloto: p.nome_piloto, aposentado: p.aposentado, status: 'erro', incluir: false, jaGravado, mensagemErro });
           }
           await new Promise((r) => setTimeout(r, 250)); // não martelar a API pública
         }
@@ -226,7 +227,8 @@ export default function RecordesCadastroPage() {
       const totais = await buscarTotaisAte(candidato.driverId, anoCorte);
       setLinhasImport((atual) => atual.map((l) => (l.idPiloto === idPiloto ? { ...l, totais, incluir: true } : l)));
     } catch (e: any) {
-      setLinhasImport((atual) => atual.map((l) => (l.idPiloto === idPiloto ? { ...l, status: 'erro', mensagemErro: e?.message } : l)));
+      const mensagemErro = e instanceof Error ? e.message : String(e || 'Erro desconhecido ao consultar a Jolpica-F1.');
+      setLinhasImport((atual) => atual.map((l) => (l.idPiloto === idPiloto ? { ...l, status: 'erro', mensagemErro } : l)));
     }
   }
 
@@ -394,7 +396,15 @@ export default function RecordesCadastroPage() {
                               <td>
                                 {l.status === 'ok' && <span>{l.nomeReal}</span>}
                                 {l.status === 'nao_encontrado' && <span className="tag-warn">não encontrado</span>}
-                                {l.status === 'erro' && <span className="tag-warn">erro na busca</span>}
+                                {l.status === 'erro' && (
+                                  <span
+                                    className="tag-warn"
+                                    title={l.mensagemErro || 'Erro desconhecido ao consultar a Jolpica-F1.'}
+                                    style={{ cursor: 'help' }}
+                                  >
+                                    erro na busca
+                                  </span>
+                                )}
                                 {l.status === 'ambiguo' && l.candidatos && (
                                   <div className="select-wrap">
                                     <select

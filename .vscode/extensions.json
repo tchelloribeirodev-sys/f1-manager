@@ -1,0 +1,19 @@
+{
+  "recommendations": [    
+    "esbenp.prettier-vscode",
+    "firsttris.vscode-jest-runner",
+    "vivaxy.vscode-conventional-commits",
+    "donjayamanne.githistory",
+    "shaharkazaz.git-merger",
+    "ritwickdey.LiveServer",
+    "fuhidev.vscode-nesttypeorm",
+    "christian-kohler.path-intellisense",
+    "elagil.pre-commit-helper",
+    "rangav.vscode-thunder-client",
+    "loiane.ts-extension-pack",
+    "alefragnani.Bookmarks",
+    "vscode-icons-team.vscode-icons",
+    "SonarSource.sonarlint-vscode",
+    "mquandalle.graphql"
+  ]
+}
