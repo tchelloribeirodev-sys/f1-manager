@@ -5,6 +5,7 @@ export type PageKey =
   | 'calendario'
   | 'bandeiras'
   | 'pilotos'
+  | 'importarGrid'
   | 'equipes'
   | 'times'
   | 'recordesCadastro'
@@ -23,6 +24,7 @@ export const PAGE_TITLES: Record<PageKey, string> = {
   calendario: 'Calendário / Provas',
   bandeiras: 'Bandeiras',
   pilotos: 'Pilotos',
+  importarGrid: 'Importar grid da F1',
   equipes: 'Equipes',
   times: 'Times',
   recordesCadastro: 'Recordes',

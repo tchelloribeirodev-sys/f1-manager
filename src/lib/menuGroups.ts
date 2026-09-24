@@ -13,7 +13,8 @@ import {
   ClipboardList,
   ArrowLeftRight,
   LineChart,
-  FolderCog
+  FolderCog,
+  Download
 } from 'lucide-react';
 import type { PageKey } from '../pages';
 
@@ -34,6 +35,7 @@ export const GRUPOS: MenuGroup[] = [
       { key: 'calendario', label: 'Calendário / Provas', icon: Flag },
       { key: 'bandeiras', label: 'Bandeiras', icon: Flag },
       { key: 'pilotos', label: 'Pilotos', icon: Users },
+      { key: 'importarGrid', label: 'Importar grid da F1', icon: Download },
       { key: 'equipes', label: 'Equipes', icon: Gauge },
       { key: 'times', label: 'Times', icon: UserCog },
       { key: 'recordesCadastro', label: 'Recordes', icon: ClipboardList }

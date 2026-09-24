@@ -75,6 +75,50 @@ export async function carregarEvolucaoEquipes(
   return { pontos, series };
 }
 
+export type PontoGraficoEquipesProva = { provaLabel: string; [chave: string]: number | string };
+
+// Evolução ACUMULADA de pontos de cada equipe, prova a prova, dentro de UMA
+// temporada — mesma ideia do dashboard de pilotos (carregarEvolucaoPilotos),
+// só que somando os pontos dos pilotos de cada equipe em vez de olhar
+// piloto a piloto. Diferente do gráfico temporada a temporada (que reseta a
+// cada temporada), aqui os pontos vão se acumulando prova a prova dentro da
+// temporada selecionada, então a linha só sobe. Mostra todas as equipes
+// escaladas na temporada (não só as 5 primeiras — o número de equipes numa
+// temporada normalmente já é pequeno).
+export async function carregarEvolucaoEquipesProvaAProva(
+  anoJogo: number,
+  tipoCarreira: TipoCarreira,
+  temporada: number
+): Promise<{ pontos: PontoGraficoEquipesProva[]; series: SerieEquipe[] }> {
+  const dados = await carregarDadosTemporada(anoJogo, temporada, tipoCarreira);
+
+  const equipesMap = new Map<number, { nome: string; cor: string }>();
+  dados.roster.forEach((r) => equipesMap.set(r.idEquipe, { nome: r.nomeEquipe, cor: r.corEquipe }));
+
+  const acum: Record<number, number> = {};
+  const provasOrdenadas = [...dados.provas].sort((a, b) => a.ordem - b.ordem);
+
+  const pontos: PontoGraficoEquipesProva[] = provasOrdenadas.map((prova) => {
+    dados.roster.forEach((r) => {
+      const pts = pontosDaProva(dados, r.idPiloto, prova.id);
+      if (pts) acum[r.idEquipe] = (acum[r.idEquipe] ?? 0) + pts;
+    });
+    const registro: PontoGraficoEquipesProva = { provaLabel: prova.abreviacao_prova };
+    equipesMap.forEach((_info, idEquipe) => {
+      registro[`eq${idEquipe}`] = acum[idEquipe] ?? 0;
+    });
+    return registro;
+  });
+
+  const series: SerieEquipe[] = Array.from(equipesMap.entries()).map(([id, info]) => ({
+    chave: `eq${id}`,
+    nome: info.nome,
+    cor: info.cor
+  }));
+
+  return { pontos, series };
+}
+
 export type PontoGraficoPilotos = { provaLabel: string; [chave: string]: number | string };
 export type SeriePiloto = { chave: string; nome: string; cor: string };
 
