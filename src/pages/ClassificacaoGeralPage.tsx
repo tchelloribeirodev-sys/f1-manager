@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { CardRanking, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
+import { CardRanking, SetaVariacao, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
 import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
 import type { TbBandeira } from '../lib/types';
 import {
   calcularClassificacaoEquipes,
   calcularClassificacaoPilotos,
   calcularSituacaoTitulo,
+  calcularVariacaoPosicao,
+  classificacaoAteProvaAnterior,
+  ordemUltimaProvaComResultado,
   carregarDadosTemporada,
   type DadosTemporada
 } from '../lib/classificacao';
@@ -40,6 +43,22 @@ export default function ClassificacaoGeralPage() {
 
   const pilotos = useMemo(() => (dados ? calcularClassificacaoPilotos(dados) : []), [dados]);
   const equipes = useMemo(() => calcularClassificacaoEquipes(pilotos), [pilotos]);
+
+  // variação de posição: classificação atual x classificação antes da última
+  // prova lançada (null = primeira prova, sem indicador)
+  const { variacaoPilotos, variacaoEquipes } = useMemo(() => {
+    const vazio = { variacaoPilotos: null, variacaoEquipes: null };
+    if (!dados) return vazio;
+    const ordemUltima = ordemUltimaProvaComResultado(dados);
+    if (ordemUltima === null) return vazio;
+    const anterior = classificacaoAteProvaAnterior(dados, ordemUltima);
+    if (!anterior) return vazio;
+    return {
+      variacaoPilotos: calcularVariacaoPosicao(pilotos, anterior.pilotos, (p) => p.idPiloto),
+      variacaoEquipes: calcularVariacaoPosicao(equipes, anterior.equipes, (e) => e.idEquipe)
+    };
+  }, [dados, pilotos, equipes]);
+
   const situacaoTitulo = useMemo(
     () => (dados ? calcularSituacaoTitulo(dados, pilotos, equipes) : null),
     [dados, pilotos, equipes]
@@ -159,11 +178,11 @@ export default function ClassificacaoGeralPage() {
       <div className="tower-cols">
         <div>
           <div className="tower-col-title">Pilotos</div>
-          <TorrePilotos linhas={pilotos} mapaBandeiras={mapaBandeiras} />
+          <TorrePilotos linhas={pilotos} mapaBandeiras={mapaBandeiras} variacao={variacaoPilotos} />
         </div>
         <div>
           <div className="tower-col-title">Equipes</div>
-          <TorreEquipes linhas={equipes} />
+          <TorreEquipes linhas={equipes} variacao={variacaoEquipes} />
         </div>
       </div>
 
@@ -216,6 +235,7 @@ export default function ClassificacaoGeralPage() {
                   <td>
                     <div className="driver-cell">
                       <span className={i < 3 ? `position top-${i + 1}` : 'position'}>{i + 1}</span>
+                      {variacaoPilotos && <SetaVariacao delta={variacaoPilotos[piloto.idPiloto]} />}
                       {piloto.paisPiloto && mapaBandeiras[piloto.paisPiloto] && (
                         <span className="flag-chip">
                           <img src={mapaBandeiras[piloto.paisPiloto]} alt={piloto.paisPiloto} />

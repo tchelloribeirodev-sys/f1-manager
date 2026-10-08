@@ -4,6 +4,24 @@ import type { LinhaClassificacao, LinhaEquipe } from '../lib/classificacao';
 // ---------- "tower" de pilotos/equipes, no mesmo layout do mockup
 // f1-mockup-telas.html (posição + nome + pontos + gap para o líder) ----------
 
+export type Variacao = Record<number, number> | null;
+
+// Seta de mudança de posição: verde ▲ quando subiu, vermelha ▼ quando desceu.
+// Sem variação (ou sem prova anterior) não renderiza nada.
+export function SetaVariacao({ delta }: { delta?: number }) {
+  if (!delta) return null;
+  const subiu = delta > 0;
+  return (
+    <span
+      className={subiu ? 'pos-delta up' : 'pos-delta down'}
+      title={subiu ? `Subiu ${delta} posição(ões)` : `Caiu ${-delta} posição(ões)`}
+    >
+      {subiu ? '▲' : '▼'}
+      <small>{Math.abs(delta)}</small>
+    </span>
+  );
+}
+
 function gapPara(pontosLider: number, pontos: number) {
   const diff = pontosLider - pontos;
   return diff === 0 ? '—' : `-${diff}`;
@@ -12,11 +30,13 @@ function gapPara(pontosLider: number, pontos: number) {
 export function TorrePilotos({
   linhas,
   compact = false,
-  mapaBandeiras = {}
+  mapaBandeiras = {},
+  variacao = null
 }: {
   linhas: LinhaClassificacao[];
   compact?: boolean;
   mapaBandeiras?: Record<string, string>;
+  variacao?: Variacao;
 }) {
   const lider = linhas[0]?.pontos ?? 0;
   return (
@@ -24,10 +44,13 @@ export function TorrePilotos({
       {linhas.map((p, i) => (
         <div
           key={p.idPiloto}
-          className={compact ? 'trow compact' : i === 0 ? 'trow p1' : 'trow'}
+          className={`${compact ? 'trow compact' : i === 0 ? 'trow p1' : 'trow'}${variacao ? ' with-delta' : ''}`}
           style={{ '--tc': p.corEquipe } as CSSProperties}
         >
-          <div className="t-pos">{i + 1}</div>
+          <div className="t-pos">
+            {i + 1}
+            {variacao && <SetaVariacao delta={variacao[p.idPiloto]} />}
+          </div>
           <div className="t-name">
             {p.paisPiloto && mapaBandeiras[p.paisPiloto] && (
               <span className="flag-chip">
@@ -45,13 +68,27 @@ export function TorrePilotos({
   );
 }
 
-export function TorreEquipes({ linhas }: { linhas: LinhaEquipe[] }) {
+export function TorreEquipes({
+  linhas,
+  compact = false,
+  variacao = null
+}: {
+  linhas: LinhaEquipe[];
+  compact?: boolean;
+  variacao?: Variacao;
+}) {
   const lider = linhas[0]?.pontos ?? 0;
   return (
     <div className="tower">
       {linhas.map((eq, i) => (
-        <div key={eq.idEquipe} className={i === 0 ? 'trow p1' : 'trow'} style={{ '--tc': eq.corEquipe } as CSSProperties}>
-          <div className="t-pos">{i + 1}</div>
+        <div
+          key={eq.idEquipe}
+          className={`${compact ? 'trow compact' : i === 0 ? 'trow p1' : 'trow'}${variacao ? ' with-delta' : ''}`}
+          style={{ '--tc': eq.corEquipe } as CSSProperties}>
+          <div className="t-pos">
+            {i + 1}
+            {variacao && <SetaVariacao delta={variacao[eq.idEquipe]} />}
+          </div>
           <div className="t-name">
             {eq.imagemEquipe && (
               <span className="team-logo">
@@ -61,7 +98,7 @@ export function TorreEquipes({ linhas }: { linhas: LinhaEquipe[] }) {
             <strong>{eq.nomeEquipe}</strong>
           </div>
           <div className="t-pts">{eq.pontos}</div>
-          <div className="t-gap">{i === 0 ? '—' : gapPara(lider, eq.pontos)}</div>
+          {!compact && <div className="t-gap">{i === 0 ? '—' : gapPara(lider, eq.pontos)}</div>}
         </div>
       ))}
       {linhas.length === 0 && <div className="rank-empty" style={{ padding: 14 }}>Nenhum resultado lançado ainda.</div>}

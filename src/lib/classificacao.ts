@@ -268,3 +268,54 @@ export function calcularSituacaoTitulo(
     }
   };
 }
+
+// ---------- variação de posição em relação à prova anterior ----------
+
+// Devolve, para cada id (piloto ou equipe), quantas posições subiu (> 0) ou
+// desceu (< 0) comparando a classificação "atual" com a da prova anterior.
+// Retorna `null` quando não há prova anterior com resultado (primeira prova da
+// temporada): nesse caso a tela não exibe indicador nenhum.
+export function calcularVariacaoPosicao<T>(
+  atual: T[],
+  anterior: T[] | null,
+  getId: (item: T) => number
+): Record<number, number> | null {
+  if (!anterior) return null;
+  const posAnterior: Record<number, number> = {};
+  anterior.forEach((item, i) => (posAnterior[getId(item)] = i + 1));
+  const variacao: Record<number, number> = {};
+  atual.forEach((item, i) => {
+    const antes = posAnterior[getId(item)];
+    if (antes !== undefined) variacao[getId(item)] = antes - (i + 1);
+  });
+  return variacao;
+}
+
+// Classificações (pilotos e equipes) "até a prova anterior" a `idProvaAtual`.
+// Prova anterior = a prova de ordem imediatamente menor no calendário. Se não
+// existir, ou se ainda não tiver nenhum resultado lançado até lá, devolve
+// `null` (sem setas).
+export function classificacaoAteProvaAnterior(
+  dados: DadosTemporada,
+  ordemProvaAtual: number
+): { pilotos: LinhaClassificacao[]; equipes: LinhaEquipe[] } | null {
+  const idsAnteriores = new Set(dados.provas.filter((p) => p.ordem < ordemProvaAtual).map((p) => p.id));
+  if (idsAnteriores.size === 0) return null;
+  const temResultado =
+    dados.resultados.some((r) => idsAnteriores.has(r.id_prova)) ||
+    dados.resultadosSprint.some((r) => idsAnteriores.has(r.id_prova));
+  if (!temResultado) return null;
+  const pilotos = calcularClassificacaoPilotos(dados, idsAnteriores);
+  return { pilotos, equipes: calcularClassificacaoEquipes(pilotos) };
+}
+
+// Ordem da última prova que já tem resultado lançado (usada na tela "Geral",
+// onde a variação é "última prova lançada" x "prova anterior a ela").
+export function ordemUltimaProvaComResultado(dados: DadosTemporada): number | null {
+  const ids = new Set<number>([
+    ...dados.resultados.map((r) => r.id_prova),
+    ...dados.resultadosSprint.map((r) => r.id_prova)
+  ]);
+  const ordens = dados.provas.filter((p) => ids.has(p.id)).map((p) => p.ordem);
+  return ordens.length ? Math.max(...ordens) : null;
+}

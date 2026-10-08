@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { CardRanking, TorrePilotos } from '../components/ClassificacaoTables';
+import { CardRanking, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
 import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
 import type { TbBandeira } from '../lib/types';
 import {
+  calcularClassificacaoEquipes,
   calcularClassificacaoPilotos,
+  calcularVariacaoPosicao,
+  classificacaoAteProvaAnterior,
   carregarDadosTemporada,
   type DadosTemporada
 } from '../lib/classificacao';
@@ -54,6 +57,20 @@ export default function ClassificacaoPorProvaPage() {
     () => (dados && provaAtual ? calcularClassificacaoPilotos(dados, idsProvasConsideradas) : []),
     [dados, provaAtual, idsProvasConsideradas]
   );
+
+  const equipes = useMemo(() => calcularClassificacaoEquipes(pilotos), [pilotos]);
+
+  // variação em relação à prova anterior do calendário (null na primeira prova)
+  const { variacaoPilotos, variacaoEquipes } = useMemo(() => {
+    const vazio = { variacaoPilotos: null, variacaoEquipes: null };
+    if (!dados || !provaAtual) return vazio;
+    const anterior = classificacaoAteProvaAnterior(dados, provaAtual.ordem);
+    if (!anterior) return vazio;
+    return {
+      variacaoPilotos: calcularVariacaoPosicao(pilotos, anterior.pilotos, (p) => p.idPiloto),
+      variacaoEquipes: calcularVariacaoPosicao(equipes, anterior.equipes, (e) => e.idEquipe)
+    };
+  }, [dados, provaAtual, pilotos, equipes]);
 
   const vitorias = useMemo(
     () =>
@@ -130,7 +147,16 @@ export default function ClassificacaoPorProvaPage() {
           <h2>Pontos até esta prova</h2>
         </div>
       </div>
-      <TorrePilotos linhas={pilotos} compact mapaBandeiras={mapaBandeiras} />
+      <div className="tower-cols">
+        <div>
+          <div className="tower-col-title">Pilotos</div>
+          <TorrePilotos linhas={pilotos} compact mapaBandeiras={mapaBandeiras} variacao={variacaoPilotos} />
+        </div>
+        <div>
+          <div className="tower-col-title">Equipes</div>
+          <TorreEquipes linhas={equipes} compact variacao={variacaoEquipes} />
+        </div>
+      </div>
 
       <div className="section-head" style={{ marginTop: 28 }}>
         <div>
