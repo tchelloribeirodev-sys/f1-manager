@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { CardRanking, SetaVariacao, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
+import { CardRanking, TorreEquipes, TorrePilotos } from '../components/ClassificacaoTables';
 import { carregarBandeiras, mapaPorCodigo } from '../lib/bandeiras';
 import type { TbBandeira } from '../lib/types';
 import {
@@ -235,7 +235,6 @@ export default function ClassificacaoGeralPage() {
                   <td>
                     <div className="driver-cell">
                       <span className={i < 3 ? `position top-${i + 1}` : 'position'}>{i + 1}</span>
-                      {variacaoPilotos && <SetaVariacao delta={variacaoPilotos[piloto.idPiloto]} />}
                       {piloto.paisPiloto && mapaBandeiras[piloto.paisPiloto] && (
                         <span className="flag-chip">
                           <img src={mapaBandeiras[piloto.paisPiloto]} alt={piloto.paisPiloto} />

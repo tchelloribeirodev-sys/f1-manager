@@ -14,10 +14,10 @@ interface Props {
 }
 
 export default function Sidebar({ page, onNavigate, menuOpen, onCloseMenu }: Props) {
-  const [abertos, setAbertos] = useState<Record<string, boolean>>({
-    Cadastros: true,
-    Resultados: true,
-    Dashboards: true
+  // no mobile (mesmo breakpoint do CSS) os grupos iniciam recolhidos
+  const [abertos, setAbertos] = useState<Record<string, boolean>>(() => {
+    const inicial = !window.matchMedia('(max-width: 900px)').matches;
+    return { Cadastros: inicial, Resultados: inicial, Dashboards: inicial };
   });
   const [email, setEmail] = useState<string | null>(null);
   const { tema, alternarTema } = useTheme();
