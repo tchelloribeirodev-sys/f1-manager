@@ -10,6 +10,7 @@ export type PageKey =
   | 'times'
   | 'recordesCadastro'
   | 'provaAProva'
+  | 'aoVivo'
   | 'classificacaoGeral'
   | 'classificacaoPorProva'
   | 'recordes'
@@ -29,6 +30,7 @@ export const PAGE_TITLES: Record<PageKey, string> = {
   times: 'Times',
   recordesCadastro: 'Recordes',
   provaAProva: 'Prova a Prova',
+  aoVivo: 'Ao Vivo',
   classificacaoGeral: 'Classificação Geral',
   classificacaoPorProva: 'Classificação Prova a Prova',
   recordes: 'Recordes',

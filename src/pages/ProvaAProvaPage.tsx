@@ -6,6 +6,7 @@ import type { TbBandeira, TbProva, TbResultado, TbResultadoSprint } from '../lib
 import { carregarDadosTemporada } from '../lib/classificacao';
 import { gerarResumoProva } from '../lib/resumo';
 import { sobrenome, sobrenomesComDesambiguacao } from '../lib/nomes';
+import ImportarDoJogo, { type AplicacaoJogo } from '../components/ImportarDoJogo';
 
 type Roster = {
   idPiloto: number;
@@ -229,6 +230,26 @@ export default function ProvaAProvaPage() {
     return () => window.removeEventListener('keydown', aoTeclar);
   });
 
+  // Preenche o formulário com a classificação vinda do jogo — NÃO grava nada:
+  // o resultado só vai para o banco quando "Salvar" é clicado.
+  function aplicarDoJogo(a: AplicacaoJogo) {
+    setLinhas((atual) => {
+      const novo: Record<number, LinhaForm> = {};
+      roster.forEach((r) => {
+        const l: LinhaForm = { ...(atual[r.idPiloto] ?? { posicao: '', pole: false, voltaMaisRapida: false, posicaoSprint: '' }) };
+        if (a.corrida) l.posicao = a.corrida[r.idPiloto] ? String(a.corrida[r.idPiloto]) : '';
+        if (a.sprint) l.posicaoSprint = a.sprint[r.idPiloto] ? String(a.sprint[r.idPiloto]) : '';
+        if (a.poleId != null) l.pole = r.idPiloto === a.poleId;
+        if (a.voltaId != null) l.voltaMaisRapida = r.idPiloto === a.voltaId;
+        novo[r.idPiloto] = l;
+      });
+      return novo;
+    });
+    setAviso(
+      ['Formulário preenchido com dados do jogo, ainda NÃO gravado: revise e clique em Salvar.', ...a.avisos].join(' ')
+    );
+  }
+
   function definirPole(idPiloto: number) {
     setLinhas((atual) => {
       const novo: Record<number, LinhaForm> = {};
@@ -419,6 +440,8 @@ export default function ProvaAProvaPage() {
               {salvando ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
+
+          <ImportarDoJogo roster={roster} provaSprint={!!provaAtual?.sprint} onAplicar={aplicarDoJogo} />
 
           {resumo && (
             <div className="resumo-card">

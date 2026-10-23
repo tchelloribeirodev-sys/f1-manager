@@ -14,7 +14,8 @@ import {
   ArrowLeftRight,
   LineChart,
   FolderCog,
-  Download
+  Download,
+  Radio
 } from 'lucide-react';
 import type { PageKey } from '../pages';
 
@@ -46,6 +47,7 @@ export const GRUPOS: MenuGroup[] = [
     icone: Trophy,
     itens: [
       { key: 'provaAProva', label: 'Prova a Prova', icon: Trophy },
+      { key: 'aoVivo', label: 'Ao Vivo', icon: Radio },
       { key: 'classificacaoGeral', label: 'Classificação Geral', icon: Award },
       { key: 'classificacaoPorProva', label: 'Classificação Prova a Prova', icon: Table2 },
       { key: 'recordes', label: 'Recordes', icon: Medal },

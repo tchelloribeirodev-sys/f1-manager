@@ -19,6 +19,7 @@ import ImportarGridPage from './pages/ImportarGridPage';
 import EquipesPage from './pages/EquipesPage';
 import TimesPage from './pages/TimesPage';
 import ProvaAProvaPage from './pages/ProvaAProvaPage';
+import AoVivoPage from './pages/AoVivoPage';
 import ClassificacaoGeralPage from './pages/ClassificacaoGeralPage';
 import ClassificacaoPorProvaPage from './pages/ClassificacaoPorProvaPage';
 import RecordesCadastroPage from './pages/RecordesCadastroPage';
@@ -39,6 +40,7 @@ const PAGES: Record<PageKey, JSX.Element> = {
   times: <TimesPage />,
   recordesCadastro: <RecordesCadastroPage />,
   provaAProva: <ProvaAProvaPage />,
+  aoVivo: <AoVivoPage />,
   classificacaoGeral: <ClassificacaoGeralPage />,
   classificacaoPorProva: <ClassificacaoPorProvaPage />,
   recordes: <RecordesPage />,
@@ -50,6 +52,7 @@ const PAGES: Record<PageKey, JSX.Element> = {
 const PAGINAS_COM_TEMPORADA: PageKey[] = [
   'times',
   'provaAProva',
+  'aoVivo',
   'classificacaoGeral',
   'classificacaoPorProva',
   'dashboardPilotos',

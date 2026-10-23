@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "bridge": "node --env-file=scripts/f1-bridge/.env scripts/f1-bridge/bridge.mjs",
+    "bridge:debug": "node --env-file=scripts/f1-bridge/.env scripts/f1-bridge/bridge.mjs --debug",
+    "bridge:test": "node scripts/f1-bridge/test-parser.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
